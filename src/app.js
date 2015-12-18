@@ -11,7 +11,7 @@ require('browsernizr/test/fullscreen-api');
 require('browsernizr/test/css/columns');
 let Modernizr = require('browsernizr');
 
-ReactDOM.render(<ReactComp name="Lord Vader"/>,  document.querySelector('.react-root')); 
+ReactDOM.render(<ReactComp name="Lord Vader"/>,  document.querySelector('.react-root'));
 $('body').css('background', 'red');
 global.app = function main() {
   let person = new Person('Jerry Lee', 'Lewis');
