@@ -19,9 +19,9 @@ var plumber      = require('gulp-plumber');
 var notify      = require('gulp-notify');
 var bundler;
 var config = {
-  baseUrl: './', 
-  entryFile: './src/app.js', 
-  outputDir: './dist/js/', 
+  baseUrl: './',
+  entryFile: './src/app.js',
+  outputDir: './dist/js/',
   outputFile: 'app.js',
 };
 
@@ -30,12 +30,11 @@ var config = {
 function getBundler() {
   if (!bundler) {
     bundler = watchify(browserify({
-      entries: config.entryFile, 
+      entries: config.entryFile,
       debug: true,
-      cache: {}, 
-      packageCache: {}, 
-      fullPaths: true // Requirement of watchif
-      //transform: config.transform
+      cache: {},
+      packageCache: {},
+      fullPaths: true // Requirement of watchify
     }));
   }
   return bundler;
@@ -51,9 +50,9 @@ function bundle() {
       sourceMapRelative: config.baseUrl + '/src'
     })
     .bundle()
-    .on('error', function(err) { 
-      console.log('Error: ' + err.message); 
-      // end this stream 
+    .on('error', function(err) {
+      console.log('Error: ' + err.message);
+      // end this stream
       // this prevents browserify to crash on compilation error
       this.emit('end');
     })
@@ -65,8 +64,8 @@ function bundle() {
     .pipe(gulp.dest(config.outputDir))
     .pipe(notify(function displayBundleMessage() {
       console.log('APP bundle built in ' + (Date.now() - start) + 'ms');
-    }))
-    .pipe(reload({stream: true}));
+    }));
+    //.pipe(reload({stream: true}));
 }
 
 // start web server
@@ -90,7 +89,8 @@ gulp.task('clean', function(cb) {
 
 //perform build without exiting
 gulp.task('build-persistent', ['clean'], function() {
-  return bundle();
+  return bundle()
+          .pipe(browserSync.reload({stream: true}));
 });
 
 //perform build and exists pipe / stop gulp
@@ -110,7 +110,7 @@ gulp.task('watch', ['build-persistent'], function() {
 
 //compiling SCSS files
 gulp.task('styles', function() {
-  //the initializer / master SCSS file, 
+  //the initializer / master SCSS file,
   //which will just be a file that imports everything
   return gulp.src(config.baseUrl + 'styles/scss/main.scss')
               //prevent pipe breaking caused by errors from gulp plugins
@@ -129,7 +129,7 @@ gulp.task('styles', function() {
                   //config.baseUrl + 'styles/scss/'
                 ]
               }))
-              // cssnext also prefix the css output 
+              // cssnext also prefix the css output
               .pipe(cssnext({
                 compress: true
               }))
@@ -175,5 +175,4 @@ gulp.task('default', ['browserSync', 'build-persistent', 'watch', 'styles'], fun
   gulp.watch(config.baseUrl + 'styles/scss/**', ['styles']);
   gulp.watch(config.baseUrl + 'images/**', ['images']);
   gulp.watch(config.baseUrl + '*.html', ['html']);
-}); 
-
+});
